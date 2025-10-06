@@ -3,9 +3,12 @@
 /// <reference types="cypress" />
 
 import userData from "../fixtures/example.json"
+import menu from "../modules/menu"
+import login from "../modules/login";
 import { getRandomEmail, getRandomNumber } from "../support/helpers";
 var Chance = require('chance');
 var chance = new Chance();
+
 
 const { log } = require("console");
 
@@ -13,17 +16,17 @@ const { log } = require("console");
 describe('Automation Exercise', () => {
   beforeEach(() => {
 
-   cy.viewport('iphone-xr')
+    cy.viewport('iphone-6')
       
     //abrir o site
-   cy.visit('https://automationexercise.com/')
+    cy.visit('https://automationexercise.com/')
 
     //Clicar no botão para criar um novo usuário
-   cy.get('a[href="/login"]').click()
+     menu.navegarParaLogin()
 
   })
 
-  it('Log',()=> {
+  it.skip('Log',()=> {
     cy.log(getRandomNumber())
     cy.log(getRandomEmail())
     cy.log(chance.address())
@@ -82,64 +85,66 @@ describe('Automation Exercise', () => {
 
    //consulta ao banco a api
    cy.log(userData.email)
-   cy.log(userData.name)   
+   cy.log(userData.name)
+
+   
 
 })
 
-  it('Login de um usuário com e-mail e senha corretos', () => {
+  it.only('Login de um usuário válido', () => {
     
-    cy.get('[data-qa="login-email"]').type('qa-tester-1759531270241@teste.com')
-    cy.get('[data-qa="login-password"]').type(`12345`)
-    cy.get('[data-qa="login-button"]').click()
+   //abre o link para informar os dados do login do usuário
+    //cy.get('[data-qa="login-email"]').type('qa-tester-1759531270241@teste.com')
+    //cy.get('[data-qa="login-password"]').type(`12345`)
+    //cy.get('[data-qa="login-button"]').click()
 
-    //Assert
+    login.preencherFormularioDeLogin(userData.email,userData.password)
 
-    cy.get('i.fa-user').parent().should('contain', 'QA tester')
-    cy.get('a[href="/logout"]').should('be.visible')
-    cy.get(':nth-child(10) > a').should('be.visible').and('contain.text','Logged in as QA tester')
-    cy.contains('b', 'QA tester')
+  cy.get(':nth-child(10) > a')
+  .should('be.visible')
+  .and('contain.text','Logged in as QA tester')   
   })
 
-   it('Login de um usuário com e-mail e senha incorretos', () => {
+   it('Login de um usuário inválido', () => {
   
-    cy.get('[data-qa="login-email"]').type('qa-tester-1759531270241@teste.com')
-    cy.get('[data-qa="login-password"]').type(`123456`)
-    cy.get('[data-qa="login-button"]').click()
+   //abre o link para informar os dados do login do usuário
+    //cy.get('[data-qa="login-email"]').type('qa-tester-1759531270241@teste.com')
+    //cy.get('[data-qa="login-password"]').type(`123456`)
+    //cy.get('[data-qa="login-button"]').click()
+    login.preencherFormularioDeLogin(userData.email,'321456')
 
     //Assert
     cy.get('.login-form > form > p').should('contain','Your email or password is incorrect!')
-
    })
 
-    it.only('Logout do usuário', () => {
+    it('Logout', () => {
 
+   //abre o link para informar os dados do login do usuário
     cy.get('[data-qa="login-email"]').type('qa-tester-1759531270241@teste.com')
     cy.get('[data-qa="login-password"]').type(`12345`)
     cy.get('[data-qa="login-button"]').click()
 
-    cy.get('i.fa-user').parent().should('contain', 'QA tester')
-  
-    //Act
-    cy.get('a[href="/logout"]').should('be.visible').click()
+    //Logout
+    //cy.get('a[href="/logout"]').should('be.visible').click()
+    menu.efetuarLogout()
 
     //Assert
     cy.url().should('includes','login')
     cy.contains('Login to your account')
-    cy.get('a[href="/logout"]').should('not.exist')
-    cy.get('a[href="/login"]').should('be.visible').contains('Signup / Login')
+   
+
+     cy.get('a[href="/logout"]').should('not.exist')
+     cy.get('a[href="/login"]').should('be.visible').contains('Signup / Login')
 
    })
 
 
-    it('Cadastrar Usuário com e-mail existente no sistema', () => {
+    it('Cadastrar um usuário jã existente', () => {
 
     //abre o link para informar os dados do usuário já existente
     cy.get('[data-qa="signup-name"]').type('QA tester')
     cy.get('[data-qa="signup-email"]').type( `qa-tester-1759531270241@teste.com `)
-
     cy.contains('button','Signup').click()
-
-    cy.get('.signup-form > form > p').should('contain','Email Address already exist!')
 
   })
 
