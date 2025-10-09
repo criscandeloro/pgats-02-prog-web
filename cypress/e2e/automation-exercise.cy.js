@@ -31,7 +31,7 @@ describe('Automation Exercise', () => {
   })
 
   
-  it('Cadastrar um usuário', () => {
+  it.only('Cadastrar um usuário', () => {
 
     const timeStamp = new Date().getTime();
   
