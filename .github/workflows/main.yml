@@ -20,4 +20,14 @@ jobs:
       # Rodando os testes
       - name: Rodando os testes
         run: npx cypress run
+
+      # Relatórios
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled()}}
+        with: 
+          name: relatorios
+        path: |
+          cypress/reports/
+          cypress/video/
+          cypress/screenshots/
         
