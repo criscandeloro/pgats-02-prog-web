@@ -107,24 +107,70 @@ it('15- Place Order: Register before Checkout', () => {
 });
  
 it('16- Place Order: Login before Checkout', () => {
-    cy.get('a[href="/login"]').click()
-    cy.get('[data-qa="login-email"]').type(userData.email);
-    cy.get('[data-qa="login-password"]').type(userData.password);
+    // --- Step 1: Create a new user for this test ---
+    const user = {
+        name: chance.name(),
+        email: chance.email(),
+        password: chance.string({ length: 10 }),
+        firstName: chance.first(),
+        lastName: chance.last(),
+        company: chance.company(),
+        address: chance.address(),
+        state: chance.state(),
+        city: chance.city(),
+        zipcode: chance.zip(),
+        phone: chance.phone()
+    };
+
+    // --- Step 2: Register the user through the UI ---
+    cy.get('a[href="/login"]').click();
+    cy.get('[data-qa="signup-name"]').type(user.name);
+    cy.get('[data-qa="signup-email"]').type(user.email);
+    cy.get('[data-qa="signup-button"]').click();
+    cy.get('#id_gender1').check();
+    cy.get('[data-qa="password"]').type(user.password);
+    cy.get('[data-qa="days"]').select('10');
+    cy.get('[data-qa="months"]').select('May');
+    cy.get('[data-qa="years"]').select('1990');
+    cy.get('[data-qa="first_name"]').type(user.firstName);
+    cy.get('[data-qa="last_name"]').type(user.lastName);
+    cy.get('[data-qa="company"]').type(user.company);
+    cy.get('[data-qa="address"]').type(user.address);
+    cy.get('[data-qa="country"]').select('United States');
+    cy.get('[data-qa="state"]').type(user.state);
+    cy.get('[data-qa="city"]').type(user.city);
+    cy.get('[data-qa="zipcode"]').type(user.zipcode);
+    cy.get('[data-qa="mobile_number"]').type(user.phone);
+    cy.get('[data-qa="create-account"]').click();
+    cy.get('b').should('contain.text', 'Account Created!');
+    cy.get('[data-qa="continue-button"]').click();
+
+    // --- Step 3: Log out to ensure a clean login session ---
+    cy.get('a[href="/logout"]').click();
+
+    // --- Step 4: Log in as the newly created user ---
+    cy.get('a[href="/login"]').click();
+    cy.get('[data-qa="login-email"]').type(user.email);
+    cy.get('[data-qa="login-password"]').type(user.password);
     cy.get('[data-qa="login-button"]').click();
-    cy.get(':nth-child(10) > a').should('be.visible');
+    cy.get(':nth-child(10) > a').should('contain.text', `Logged in as ${user.name}`);
+
+    // --- Step 5: Continue with the original test flow ---
     cy.get('.features_items > :nth-child(3) > .product-image-wrapper > .single-products > .productinfo > .btn').click({force: true});
     cy.get('.modal-footer > .btn').click();
     cy.get('.shop-menu > .nav > :nth-child(3) > a').click();
     cy.get('.col-sm-6 > .btn').click();
     cy.get('.form-control').type('Test order');
     cy.get(':nth-child(7) > .btn').click();
-    cy.get('[data-qa="name-on-card"]').type(chance.name());
+    cy.get('[data-qa="name-on-card"]').type(user.name);
     cy.get('[data-qa="card-number"]').type(chance.cc());
     cy.get('[data-qa="cvc"]').type(chance.natural({ min: 100, max: 999 }));
     cy.get('[data-qa="expiry-month"]').type('12');
     cy.get('[data-qa="expiry-year"]').type('2025');
     cy.get('[data-qa="pay-button"]').click();
     cy.contains('p', 'Congratulations! Your order has been confirmed!').should('be.visible');
+
+    // --- Step 6: Delete the account to clean up ---
     cy.get('a[href="/delete_account"]').click();
     cy.get('b').should('contain.text', 'Account Deleted!');
     cy.get('[data-qa="continue-button"]').click();
