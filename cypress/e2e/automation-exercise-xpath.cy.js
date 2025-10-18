@@ -68,7 +68,7 @@ describe('Automation Exercise', () => {
 
    it('Login de um usuário com e-mail e senha corretos', () => {
     
-    cy.get('[data-qa="login-email"]').type('qa-tester-1759531270241@teste.com')
+    cy.get('[data-qa="login-email"]').type('qa-tester-17@teste.com')
     cy.get('[data-qa="login-password"]').type(`12345`)
     cy.get('[data-qa="login-button"]').click()
 
@@ -81,7 +81,7 @@ describe('Automation Exercise', () => {
 
    it('Login de um usuário com e-mail e senha incorretos', () => {
   
-    cy.get('[data-qa="login-email"]').type('qa-tester-1759531270241@teste.com')
+    cy.get('[data-qa="login-email"]').type('qa-tester-17@teste.com')
     cy.get('[data-qa="login-password"]').type(`123456`)
     cy.get('[data-qa="login-button"]').click()
 
@@ -92,7 +92,7 @@ describe('Automation Exercise', () => {
 
     it('Logout do usuário', () => {
 
-    cy.get('[data-qa="login-email"]').type('qa-tester-1759531270241@teste.com')
+    cy.get('[data-qa="login-email"]').type('qa-tester-17@teste.com')
     cy.get('[data-qa="login-password"]').type(`12345`)
     cy.get('[data-qa="login-button"]').click()
 
@@ -113,7 +113,7 @@ describe('Automation Exercise', () => {
 
     //abre o link para informar os dados do usuário já existente
     cy.get('[data-qa="signup-name"]').type('QA tester')
-    cy.get('[data-qa="signup-email"]').type( `qa-tester-1759531270241@teste.com `)
+    cy.get('[data-qa="signup-email"]').type( `qa-tester-17@teste.com `)
 
     cy.contains('button','Signup').click()
 
